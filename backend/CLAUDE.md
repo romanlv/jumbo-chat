@@ -4,11 +4,6 @@ globs: "*.ts, *.tsx, *.js, *.jsx, package.json"
 alwaysApply: false
 ---
 
-## Runtime & Package Manager
-
-- **Bun** is the runtime and package manager. Use `bun` for everything.
-- Bun automatically loads `.env` — do not use dotenv.
-
 ## Framework
 
 - **Fastify 5** with `@fastify/type-provider-typebox` for type-safe request/response schemas.
@@ -27,7 +22,7 @@ src/
 │   └── logger.ts     # Pino logger setup
 ├── lib/
 │   └── errors.ts     # Custom error classes (AppError, NotFoundError, etc.)
-└── features/         # Feature modules (routes + services per feature)
+└── features/         # Feature modules (see root CLAUDE.md for pattern)
 ```
 
 ## Commands
@@ -40,13 +35,6 @@ src/
 
 ## Conventions
 
-- Use `@sinclair/typebox` for request/response schemas.
 - Feature routes are Fastify plugins registered via `fastify.register()`.
 - SSE endpoints use async generators.
 - Custom errors extend `AppError` from `src/lib/errors.ts`.
-- Biome for linting and formatting (not ESLint/Prettier).
-
-## Ports
-
-- Backend: `4089`
-- Frontend: `4088`

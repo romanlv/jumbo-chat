@@ -11,4 +11,17 @@ export const config = {
   frontend: {
     url: process.env.FRONTEND_URL ?? "http://localhost:4088",
   },
+
+  db: {
+    url: process.env.TURSO_DATABASE_URL ?? "file:local.db",
+    authToken: process.env.TURSO_AUTH_TOKEN,
+  },
+
+  openai: {
+    apiKey: process.env.OPENAI_API_KEY,
+  },
+
+  firecrawl: {
+    apiKey: process.env.FIRECRAWL_API_KEY,
+  },
 };

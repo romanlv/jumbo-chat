@@ -1,0 +1,24 @@
+[
+  { "url": "https://www.jumbo88.com/faqs", "title": "FAQs", "priority": 1 },
+  {
+    "url": "https://www.jumbo88.com/sweepstakes-rules",
+    "title": "Sweepstakes Rules",
+    "priority": 1
+  },
+  {
+    "url": "https://www.jumbo88.com/terms-of-use",
+    "title": "Terms of Use",
+    "priority": 1
+  },
+  {
+    "url": "https://www.jumbo88.com/privacy-policy",
+    "title": "Privacy Policy",
+    "priority": 2
+  },
+  {
+    "url": "https://www.jumbo88.com/refer-a-friend",
+    "title": "Referral Program",
+    "priority": 2
+  },
+  { "url": "https://www.jumbo88.com/", "title": "Homepage", "priority": 2 }
+]

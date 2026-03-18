@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { resetDb } from "../../lib/db.ts";
+import { closeDb } from "../../lib/db.ts";
 import { buildServer } from "../../server.ts";
 
 // Route tests using fastify.inject()
@@ -7,7 +7,7 @@ import { buildServer } from "../../server.ts";
 
 describe("POST /api/chat", () => {
   afterEach(() => {
-    resetDb();
+    closeDb();
   });
 
   test("returns 400 for missing message", async () => {

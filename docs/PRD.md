@@ -289,22 +289,22 @@ The project is implemented in stages, but the submission is expected to present 
 
 ### Stage 1 — Ingestion + Vector Search
 
-- [ ] `sources.json` config and `data/kb/` markdown snapshots
-- [ ] Ingestion pipeline: chunk, embed, store (index-only mode)
-- [ ] Fetch mode via `--fetch` flag (Firecrawl)
-- [ ] Vector search via libSQL (`search` method on vector store)
-- [ ] Tests: chunker, vector store, ingestion pipeline
+- [x] `sources.json` config and `data/kb/` markdown snapshots
+- [x] Ingestion pipeline: chunk, embed, store (index-only mode)
+- [x] Fetch mode via `--fetch` flag (Firecrawl)
+- [x] Vector search via libSQL (`search` method on vector store)
+- [x] Tests: chunker, vector store, ingestion pipeline
 
 ### Stage 2 — Chat Service + Persistence + API + CLI
 
-- [ ] DB schema: sessions and messages tables (Drizzle for relational tables)
-- [ ] Chat service with tool-use RAG (`search_knowledge_base` + `escalate_to_human`)
-- [ ] System prompt with guardrails
-- [ ] `POST /api/chat` endpoint with SSE streaming, server-managed sessions (`sessionId` creation/reuse)
-- [ ] Persist sessions and messages to libSQL; flag escalated sessions
-- [ ] CLI client for testing (REPL, streams tokens, shows tool activity)
-- [ ] Eval suite: `evals/cases.json` + `bun run eval` runner using CLI single-shot mode
-- [ ] Tests: chat service tool wiring, endpoint SSE stream, persistence, guardrails
+- [x] DB schema: sessions and messages tables (Drizzle for relational tables)
+- [x] Chat service with tool-use RAG (`search_knowledge_base` + `escalate_to_human`)
+- [x] System prompt with guardrails
+- [x] `POST /api/chat` endpoint with SSE streaming, server-managed sessions (`sessionId` creation/reuse)
+- [x] Persist sessions and messages to libSQL; flag escalated sessions
+- [x] CLI client for testing (REPL, streams tokens, shows tool activity)
+- [x] Eval suite: `evals/cases.json` + `bun run eval` runner using CLI single-shot mode
+- [x] Tests: chat service tool wiring, endpoint SSE stream, persistence, guardrails
 
 ### Stage 3 — Frontend
 

@@ -1,20 +1,27 @@
-import { afterEach, beforeEach, describe, expect, test } from "bun:test";
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  test,
+} from "bun:test";
 import { eq } from "drizzle-orm";
-import type { getDrizzle } from "../../lib/db.ts";
 import * as schema from "../../db/schema.ts";
-import { cleanupTestDb, initTestDb } from "../../utils/test-utils.ts";
+import { db } from "../../lib/db.ts";
+import {
+  resetTestData,
+  setupTestDb,
+  teardownTestDb,
+} from "../../utils/test-utils.ts";
 
 // We test the service's session/message logic using the DB directly,
 // since the full processMessage requires a real LLM.
 
 describe("chat service persistence", () => {
-  let db: ReturnType<typeof getDrizzle>;
-
-  beforeEach(async () => {
-    db = await initTestDb();
-  });
-
-  afterEach(cleanupTestDb);
+  beforeAll(setupTestDb);
+  beforeEach(resetTestData);
+  afterAll(teardownTestDb);
 
   test("session creation inserts a row", async () => {
     const now = new Date().toISOString();

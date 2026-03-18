@@ -1,8 +1,19 @@
-import { afterEach, beforeEach, describe, expect, test } from "bun:test";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  test,
+} from "bun:test";
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { getDb } from "../../lib/db.ts";
-import { cleanupTestDb, initTestDb } from "../../utils/test-utils.ts";
+import {
+  resetTestData,
+  setupTestDb,
+  teardownTestDb,
+} from "../../utils/test-utils.ts";
 import {
   LibSQLVectorStore,
   type VectorSearchResult,
@@ -22,13 +33,14 @@ const fakeEmbedFn = async (texts: string[]): Promise<number[][]> => {
 };
 
 describe("runIngestion", () => {
-  let store: LibSQLVectorStore;
+  const store = new LibSQLVectorStore();
   let tmpDir: string;
 
-  beforeEach(async () => {
-    await initTestDb();
-    store = new LibSQLVectorStore(getDb());
+  beforeAll(setupTestDb);
+  afterAll(teardownTestDb);
 
+  beforeEach(async () => {
+    await resetTestData();
     tmpDir = resolve(
       import.meta.dirname ?? ".",
       `../../../.tmp-test-${Date.now()}`,
@@ -37,7 +49,6 @@ describe("runIngestion", () => {
   });
 
   afterEach(() => {
-    cleanupTestDb();
     if (existsSync(tmpDir)) {
       rmSync(tmpDir, { recursive: true, force: true });
     }

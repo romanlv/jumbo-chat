@@ -11,6 +11,7 @@ const chatRoutes: FastifyPluginAsync = async (fastify) => {
       schema: {
         body: ChatRequestSchema,
       },
+      sse: true,
     },
     async (request, reply) => {
       const { message, sessionId } = request.body as {
@@ -24,7 +25,7 @@ const chatRoutes: FastifyPluginAsync = async (fastify) => {
       return reply.sse.send(
         (async function* () {
           for await (const event of events) {
-            yield { data: JSON.stringify(event) };
+            yield { data: event };
           }
         })(),
       );

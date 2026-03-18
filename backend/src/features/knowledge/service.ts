@@ -1,7 +1,7 @@
-import { getDb } from "../../lib/db.ts";
 import { generateEmbedding } from "./embeddings.ts";
 import { LibSQLVectorStore } from "./vector-store.ts";
 
+const store = new LibSQLVectorStore();
 const RELEVANCE_THRESHOLD = 0.7;
 
 export interface KnowledgeSearchResult {
@@ -16,7 +16,6 @@ export async function searchKnowledge(
   query: string,
   topK = 5,
 ): Promise<KnowledgeSearchResult[]> {
-  const store = new LibSQLVectorStore(getDb());
   const embedding = await generateEmbedding(query);
   const results = await store.search(embedding, topK);
 

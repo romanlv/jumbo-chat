@@ -3,7 +3,6 @@ import { resolve } from "node:path";
 import { parseArgs } from "node:util";
 import Firecrawl from "@mendable/firecrawl-js";
 import { config } from "../../config.ts";
-import { getDb } from "../../lib/db.ts";
 import { generateEmbeddings } from "../knowledge/embeddings.ts";
 import {
   type ChunkWithEmbedding,
@@ -111,8 +110,7 @@ async function main() {
   const sourcesPath = resolve(baseDir, "../../../data/sources.json");
   const sources: Source[] = JSON.parse(readFileSync(sourcesPath, "utf-8"));
 
-  const db = getDb();
-  const store = new LibSQLVectorStore(db);
+  const store = new LibSQLVectorStore();
   const dataDir = resolve(baseDir, "../../../data");
 
   let fetchPage: ((url: string) => Promise<string>) | undefined;

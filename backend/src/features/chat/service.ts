@@ -4,7 +4,7 @@ import { type ModelMessage, stepCountIs, streamText } from "ai";
 import { eq } from "drizzle-orm";
 import { config } from "../../config.ts";
 import * as schema from "../../db/schema.ts";
-import { getDrizzle } from "../../lib/db.ts";
+import { db } from "../../lib/db.ts";
 import { NotFoundError } from "../../lib/errors.ts";
 import { SYSTEM_PROMPT } from "./system-prompt.ts";
 import { createTools, type ToolState } from "./tools.ts";
@@ -104,9 +104,7 @@ function createModel() {
 
 export function createChatService() {
   const model = createModel();
-
   async function getOrCreateSession(sessionId?: string) {
-    const db = getDrizzle();
     const now = new Date().toISOString();
 
     if (sessionId) {
@@ -118,24 +116,19 @@ export function createChatService() {
     }
 
     const id = randomUUID();
-    await db.insert(schema.sessions).values({
-      id,
-      status: "active",
-      createdAt: now,
-      updatedAt: now,
-    });
-
-    return {
+    const session = {
       id,
       status: "active",
       escalatedReason: null,
       createdAt: now,
       updatedAt: now,
     };
+    await db.insert(schema.sessions).values(session);
+
+    return session;
   }
 
   async function getSessionHistory(sessionId: string): Promise<ModelMessage[]> {
-    const db = getDrizzle();
     const rows = await db.query.messages.findMany({
       where: eq(schema.messages.sessionId, sessionId),
       orderBy: (m, { asc }) => [asc(m.createdAt)],
@@ -156,7 +149,6 @@ export function createChatService() {
     sources?: ChatSource[],
     toolCalls?: Array<{ name: string; input: unknown; output: unknown }>,
   ) {
-    const db = getDrizzle();
     await db.insert(schema.messages).values({
       id: randomUUID(),
       sessionId,
@@ -169,7 +161,6 @@ export function createChatService() {
   }
 
   async function flagEscalated(sessionId: string, reason: string) {
-    const db = getDrizzle();
     await db
       .update(schema.sessions)
       .set({

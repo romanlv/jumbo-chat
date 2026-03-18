@@ -1,4 +1,6 @@
-import type { Client } from "@libsql/client";
+import { eq } from "drizzle-orm";
+import { documents } from "../../db/schema.ts";
+import { db } from "../../lib/db.ts";
 
 export interface ChunkWithEmbedding {
   chunkId: string;
@@ -27,28 +29,27 @@ export interface VectorStore {
 }
 
 export class LibSQLVectorStore implements VectorStore {
-  constructor(private client: Client) {}
-
   async upsertChunks(chunks: ChunkWithEmbedding[]): Promise<void> {
     if (chunks.length === 0) return;
 
-    const tx = await this.client.transaction("write");
+    const tx = await db.$client.transaction("write");
     try {
       for (const chunk of chunks) {
+        const now = new Date().toISOString();
         await tx.execute({
           sql: `INSERT OR REPLACE INTO documents
             (chunk_id, source_url, title, priority, chunk_index, content, embedding, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, vector32(?), ?)`,
-          args: [
-            chunk.chunkId,
-            chunk.sourceUrl,
-            chunk.title,
-            chunk.priority,
-            chunk.chunkIndex,
-            chunk.content,
-            JSON.stringify(chunk.embedding),
-            new Date().toISOString(),
-          ],
+            VALUES (:chunkId, :sourceUrl, :title, :priority, :chunkIndex, :content, vector32(:embedding), :updatedAt)`,
+          args: {
+            chunkId: chunk.chunkId,
+            sourceUrl: chunk.sourceUrl,
+            title: chunk.title,
+            priority: chunk.priority,
+            chunkIndex: chunk.chunkIndex,
+            content: chunk.content,
+            embedding: JSON.stringify(chunk.embedding),
+            updatedAt: now,
+          },
         });
       }
       await tx.commit();
@@ -59,7 +60,8 @@ export class LibSQLVectorStore implements VectorStore {
   }
 
   async search(embedding: number[], topK = 5): Promise<VectorSearchResult[]> {
-    const result = await this.client.execute({
+    const vec = JSON.stringify(embedding);
+    const result = await db.$client.execute({
       sql: `SELECT
         d.chunk_id,
         d.source_url,
@@ -67,11 +69,10 @@ export class LibSQLVectorStore implements VectorStore {
         d.priority,
         d.chunk_index,
         d.content,
-        vector_distance_cos(d.embedding, vector32(?)) AS distance
-      FROM vector_top_k('idx_documents_embedding', vector32(?), ?) AS v
-      JOIN documents AS d ON d.rowid = v.id
-      ORDER BY distance`,
-      args: [JSON.stringify(embedding), JSON.stringify(embedding), topK],
+        vector_distance_cos(d.embedding, vector32(:vec)) AS distance
+      FROM vector_top_k('idx_documents_embedding', vector32(:vec), :topK) AS v
+      JOIN documents AS d ON d.rowid = v.id`,
+      args: { vec, topK },
     });
 
     return result.rows.map((row) => ({
@@ -86,9 +87,6 @@ export class LibSQLVectorStore implements VectorStore {
   }
 
   async deleteBySourceUrl(sourceUrl: string): Promise<void> {
-    await this.client.execute({
-      sql: "DELETE FROM documents WHERE source_url = ?",
-      args: [sourceUrl],
-    });
+    await db.delete(documents).where(eq(documents.sourceUrl, sourceUrl));
   }
 }

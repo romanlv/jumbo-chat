@@ -5,11 +5,12 @@ import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import Fastify, { type FastifyError } from "fastify";
 import { config } from "./config.ts";
 import chatRoutes from "./features/chat/routes.ts";
-import { ensureVectorIndex, runMigrations } from "./lib/db.ts";
+import { ensureVectorIndex, initDb, runMigrations } from "./lib/db.ts";
 import { AppError } from "./lib/errors.ts";
 import { fastifyLogger } from "./utils/logger.ts";
 
 export async function buildServer() {
+  initDb(config.db.url, config.db.authToken);
   if (config.isDev) {
     await runMigrations();
     await ensureVectorIndex();

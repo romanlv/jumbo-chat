@@ -1,37 +1,17 @@
-import { type Client, createClient } from "@libsql/client";
+import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import { migrate } from "drizzle-orm/libsql/migrator";
-import { config } from "../config.ts";
 import * as schema from "../db/schema.ts";
 
-let client: Client | null = null;
-let drizzleDb: ReturnType<typeof drizzle<typeof schema>> | null = null;
+export let db: ReturnType<typeof drizzle<typeof schema>>;
 
-export function initDb(url: string, authToken?: string): Client {
-  client = createClient({ url, authToken });
-  drizzleDb = null;
-  return client;
-}
-
-export function getDb(): Client {
-  if (!client) {
-    client = createClient({
-      url: config.db.url,
-      authToken: config.db.authToken,
-    });
-  }
-  return client;
-}
-
-export function getDrizzle() {
-  if (!drizzleDb) {
-    drizzleDb = drizzle(getDb(), { schema });
-  }
-  return drizzleDb;
+export function initDb(url: string, authToken?: string): void {
+  const client = createClient({ url, authToken });
+  db = drizzle(client, { schema });
 }
 
 export async function runMigrations(): Promise<void> {
-  await migrate(getDrizzle(), { migrationsFolder: "./drizzle" });
+  await migrate(db, { migrationsFolder: "./drizzle" });
 }
 
 /**
@@ -39,13 +19,11 @@ export async function runMigrations(): Promise<void> {
  * Must be applied separately after migrations.
  */
 export async function ensureVectorIndex(): Promise<void> {
-  await getDb().execute(
+  await db.$client.execute(
     "CREATE INDEX IF NOT EXISTS idx_documents_embedding ON documents(libsql_vector_idx(embedding))",
   );
 }
 
-export function resetDb(): void {
-  drizzleDb = null;
-  client?.close();
-  client = null;
+export function closeDb(): void {
+  db?.$client?.close();
 }

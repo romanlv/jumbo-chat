@@ -3,9 +3,9 @@ import { createAnthropic } from "@ai-sdk/anthropic";
 import { type ModelMessage, stepCountIs, streamText } from "ai";
 import { eq } from "drizzle-orm";
 import { config } from "../../config.ts";
-import * as schema from "../../db/schema.ts";
-import { db } from "../../lib/db.ts";
+import { db } from "../../db.ts";
 import { NotFoundError } from "../../lib/errors.ts";
+import * as schema from "../../schema.ts";
 import { SYSTEM_PROMPT } from "./system-prompt.ts";
 import { createTools, type ToolState } from "./tools.ts";
 import type { ChatSource, SSEEvent } from "./types.ts";
@@ -100,6 +100,39 @@ function createModel() {
 
   const modelId = config.anthropic.model;
   return provider(modelId);
+}
+
+interface StreamPart {
+  type: string;
+  text?: string;
+  toolName?: string;
+  input?: unknown;
+  output?: unknown;
+}
+
+/** Filters raw AI SDK stream parts into SSE events for the client. */
+export async function* filterStreamEvents(
+  stream: AsyncIterable<StreamPart>,
+): AsyncGenerator<SSEEvent> {
+  let lastPartWasToolResult = false;
+  let sentThinking = false;
+
+  for await (const part of stream) {
+    if (part.type === "text-delta") {
+      if (lastPartWasToolResult) {
+        yield { type: "text-delta", delta: "\n\n" };
+        lastPartWasToolResult = false;
+      }
+      yield { type: "text-delta", delta: part.text! };
+    } else if (part.type === "tool-call") {
+      if (!sentThinking) {
+        yield { type: "thinking" };
+        sentThinking = true;
+      }
+    } else if (part.type === "tool-result") {
+      lastPartWasToolResult = true;
+    }
+  }
 }
 
 export function createChatService() {
@@ -232,9 +265,16 @@ export function createChatService() {
     });
 
     let fullText = "";
+    let lastPartWasToolResult = false;
+    let sentThinking = false;
 
     for await (const part of result.fullStream) {
       if (part.type === "text-delta") {
+        if (lastPartWasToolResult) {
+          fullText += "\n\n";
+          yield { type: "text-delta", delta: "\n\n" };
+          lastPartWasToolResult = false;
+        }
         fullText += part.text;
         yield { type: "text-delta", delta: part.text };
       } else if (part.type === "tool-call") {
@@ -243,19 +283,14 @@ export function createChatService() {
           input: part.input,
           output: null,
         });
-        yield {
-          type: "tool-call",
-          name: part.toolName,
-          args: part.input as Record<string, unknown>,
-        };
+        if (!sentThinking) {
+          yield { type: "thinking" };
+          sentThinking = true;
+        }
       } else if (part.type === "tool-result") {
         const lastCall = toolCallLog.findLast((c) => c.name === part.toolName);
         if (lastCall) lastCall.output = part.output;
-        yield {
-          type: "tool-result",
-          name: part.toolName,
-          result: part.output,
-        };
+        lastPartWasToolResult = true;
       }
     }
 

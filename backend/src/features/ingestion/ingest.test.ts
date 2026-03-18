@@ -7,7 +7,7 @@ import {
   expect,
   test,
 } from "bun:test";
-import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { mkdir, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 import {
   resetTestData,
@@ -45,13 +45,12 @@ describe("runIngestion", () => {
       import.meta.dirname ?? ".",
       `../../../.tmp-test-${Date.now()}`,
     );
-    mkdirSync(resolve(tmpDir, "kb"), { recursive: true });
+    await mkdir(resolve(tmpDir, "fetched"), { recursive: true });
+    await mkdir(resolve(tmpDir, "static"), { recursive: true });
   });
 
-  afterEach(() => {
-    if (existsSync(tmpDir)) {
-      rmSync(tmpDir, { recursive: true, force: true });
-    }
+  afterEach(async () => {
+    await rm(tmpDir, { recursive: true, force: true }).catch(() => {});
   });
 
   test("ingests markdown files into vector store", async () => {
@@ -63,16 +62,15 @@ describe("runIngestion", () => {
       },
     ];
 
-    writeFileSync(
-      resolve(tmpDir, "kb/faq.md"),
+    await Bun.write(
+      resolve(tmpDir, "fetched/faq.md"),
       "# FAQ\n\nWhat is this?\n\nThis is a test document with some content.",
-      "utf-8",
     );
 
     await runIngestion({
       fetch: false,
       store,
-      dataDir: tmpDir,
+      kbDir: tmpDir,
       sources,
       embedFn: fakeEmbedFn,
     });
@@ -93,30 +91,28 @@ describe("runIngestion", () => {
       },
     ];
 
-    writeFileSync(
-      resolve(tmpDir, "kb/page.md"),
+    await Bun.write(
+      resolve(tmpDir, "fetched/page.md"),
       "# Page\n\nOriginal content here.",
-      "utf-8",
     );
 
     await runIngestion({
       fetch: false,
       store,
-      dataDir: tmpDir,
+      kbDir: tmpDir,
       sources,
       embedFn: fakeEmbedFn,
     });
 
-    writeFileSync(
-      resolve(tmpDir, "kb/page.md"),
+    await Bun.write(
+      resolve(tmpDir, "fetched/page.md"),
       "# Page\n\nUpdated content here.",
-      "utf-8",
     );
 
     await runIngestion({
       fetch: false,
       store,
-      dataDir: tmpDir,
+      kbDir: tmpDir,
       sources,
       embedFn: fakeEmbedFn,
     });
@@ -139,7 +135,7 @@ describe("runIngestion", () => {
     await runIngestion({
       fetch: false,
       store,
-      dataDir: tmpDir,
+      kbDir: tmpDir,
       sources,
       embedFn: fakeEmbedFn,
     });

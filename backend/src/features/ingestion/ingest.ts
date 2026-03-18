@@ -1,8 +1,9 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import { parseArgs } from "node:util";
 import Firecrawl from "@mendable/firecrawl-js";
 import { config } from "../../config.ts";
+import { initDb } from "../../db.ts";
 import { generateEmbeddings } from "../knowledge/embeddings.ts";
 import {
   type ChunkWithEmbedding,
@@ -12,9 +13,16 @@ import {
 import { type Chunk, type ChunkInput, chunkDocument } from "./chunker.ts";
 
 interface Source {
-  url: string;
+  url?: string;
+  file?: string;
   title: string;
   priority: number;
+}
+
+function sourceId(source: Source): string {
+  const id = source.url ?? source.file;
+  if (!id) throw new Error(`Source "${source.title}" must have url or file`);
+  return id;
 }
 
 export function urlToSlug(url: string): string {
@@ -26,7 +34,7 @@ export function urlToSlug(url: string): string {
 interface IngestionDeps {
   fetch: boolean;
   store: VectorStore;
-  dataDir: string;
+  kbDir: string;
   sources: Source[];
   embedFn: (texts: string[]) => Promise<number[][]>;
   fetchPage?: (url: string) => Promise<string>;
@@ -36,39 +44,46 @@ export async function runIngestion(deps: IngestionDeps): Promise<void> {
   const {
     fetch: shouldFetch,
     store,
-    dataDir,
+    kbDir,
     sources,
     embedFn,
     fetchPage,
   } = deps;
-  const kbDir = resolve(dataDir, "kb");
-  mkdirSync(kbDir, { recursive: true });
+  const fetchedDir = resolve(kbDir, "fetched");
+  const staticDir = resolve(kbDir, "static");
+  await mkdir(fetchedDir, { recursive: true });
+  await mkdir(staticDir, { recursive: true });
 
   if (shouldFetch) {
     if (!fetchPage) throw new Error("fetchPage required when --fetch is set");
     console.log("Fetching pages...");
     for (const source of sources) {
+      if (!source.url || source.file) continue;
       const slug = urlToSlug(source.url);
       console.log(`  Fetching ${source.url} → ${slug}.md`);
       const markdown = await fetchPage(source.url);
-      writeFileSync(resolve(kbDir, `${slug}.md`), markdown, "utf-8");
+      await Bun.write(resolve(fetchedDir, `${slug}.md`), markdown);
     }
   }
 
   let totalChunks = 0;
+  const indexedSources: string[] = [];
 
   for (const source of sources) {
-    const slug = urlToSlug(source.url);
-    const filePath = resolve(kbDir, `${slug}.md`);
+    const id = sourceId(source);
+    const filePath = source.file
+      ? resolve(staticDir, source.file)
+      : resolve(fetchedDir, `${urlToSlug(id)}.md`);
+    const file = Bun.file(filePath);
 
-    if (!existsSync(filePath)) {
+    if (!(await file.exists())) {
       console.log(`  Skipping ${source.title} — no markdown file found`);
       continue;
     }
 
-    const content = readFileSync(filePath, "utf-8");
+    const content = await file.text();
     const input: ChunkInput = {
-      sourceUrl: source.url,
+      sourceUrl: id,
       title: source.title,
       priority: source.priority,
       content,
@@ -87,12 +102,15 @@ export async function runIngestion(deps: IngestionDeps): Promise<void> {
       embedding: embeddings[i] as number[],
     }));
 
-    await store.deleteBySourceUrl(source.url);
+    await store.deleteBySourceUrl(id);
     await store.upsertChunks(chunksWithEmbeddings);
+    indexedSources.push(id);
 
     console.log(`  ${source.title}: ${chunks.length} chunks`);
     totalChunks += chunks.length;
   }
+
+  await store.deleteNotIn(indexedSources);
 
   console.log(`Done. Total chunks indexed: ${totalChunks}`);
 }
@@ -106,12 +124,15 @@ async function main() {
     },
   });
 
+  initDb();
+
   const baseDir = import.meta.dirname ?? ".";
-  const sourcesPath = resolve(baseDir, "../../../data/sources.json");
-  const sources: Source[] = JSON.parse(readFileSync(sourcesPath, "utf-8"));
+  const rootDir = resolve(baseDir, "../../..");
+  const sourcesPath = resolve(rootDir, "../data/sources.json");
+  const sources: Source[] = await Bun.file(sourcesPath).json();
 
   const store = new LibSQLVectorStore();
-  const dataDir = resolve(baseDir, "../../../data");
+  const kbDir = resolve(rootDir, "../data/kb");
 
   let fetchPage: ((url: string) => Promise<string>) | undefined;
   if (values.fetch) {
@@ -129,7 +150,7 @@ async function main() {
   await runIngestion({
     fetch: values.fetch ?? false,
     store,
-    dataDir,
+    kbDir,
     sources,
     embedFn: generateEmbeddings,
     fetchPage,

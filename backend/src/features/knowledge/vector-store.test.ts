@@ -7,8 +7,8 @@ import {
   test,
 } from "bun:test";
 import { count, eq } from "drizzle-orm";
-import { documents } from "../../db/schema.ts";
-import { db } from "../../lib/db.ts";
+import { db } from "../../db.ts";
+import { documents } from "../../schema.ts";
 import {
   resetTestData,
   setupTestDb,

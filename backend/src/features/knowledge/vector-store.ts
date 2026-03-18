@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
-import { documents } from "../../db/schema.ts";
-import { db } from "../../lib/db.ts";
+import { eq, notInArray } from "drizzle-orm";
+import { db } from "../../db.ts";
+import { documents } from "../../schema.ts";
 
 export interface ChunkWithEmbedding {
   chunkId: string;
@@ -26,6 +26,7 @@ export interface VectorStore {
   upsertChunks(chunks: ChunkWithEmbedding[]): Promise<void>;
   search(embedding: number[], topK?: number): Promise<VectorSearchResult[]>;
   deleteBySourceUrl(sourceUrl: string): Promise<void>;
+  deleteNotIn(sourceUrls: string[]): Promise<void>;
 }
 
 export class LibSQLVectorStore implements VectorStore {
@@ -88,5 +89,15 @@ export class LibSQLVectorStore implements VectorStore {
 
   async deleteBySourceUrl(sourceUrl: string): Promise<void> {
     await db.delete(documents).where(eq(documents.sourceUrl, sourceUrl));
+  }
+
+  async deleteNotIn(sourceUrls: string[]): Promise<void> {
+    if (sourceUrls.length === 0) {
+      await db.delete(documents);
+      return;
+    }
+    await db
+      .delete(documents)
+      .where(notInArray(documents.sourceUrl, sourceUrls));
   }
 }

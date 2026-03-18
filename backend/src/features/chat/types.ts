@@ -16,8 +16,7 @@ export interface ChatSource {
 
 export type SSEEvent =
   | { type: "text-delta"; delta: string }
-  | { type: "tool-call"; name: string; args: Record<string, unknown> }
-  | { type: "tool-result"; name: string; result: unknown }
+  | { type: "thinking" }
   | {
       type: "metadata";
       sessionId: string;

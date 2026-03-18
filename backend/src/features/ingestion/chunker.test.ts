@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { type Chunk, type ChunkInput, chunkDocument } from "./chunker.ts";
 
@@ -15,10 +15,15 @@ function first(chunks: Chunk[]): Chunk {
   return chunks[0] as Chunk;
 }
 
-const kbDir = resolve(import.meta.dirname as string, "../../../data/kb");
+const kbDir = resolve(import.meta.dirname as string, "../../../../data/kb");
+const fetchedDir = resolve(kbDir, "fetched");
+const staticDir = resolve(kbDir, "static");
 
 function readKb(filename: string): string {
-  return readFileSync(resolve(kbDir, filename), "utf-8");
+  const fetchedPath = resolve(fetchedDir, filename);
+  const staticPath = resolve(staticDir, filename);
+  if (existsSync(fetchedPath)) return readFileSync(fetchedPath, "utf-8");
+  return readFileSync(staticPath, "utf-8");
 }
 
 describe("chunkDocument", () => {
@@ -112,7 +117,13 @@ describe("chunkDocument", () => {
 });
 
 describe("chunkDocument against real kb files", () => {
-  const files = readdirSync(kbDir).filter((f) => f.endsWith(".md"));
+  const fetchedFiles = existsSync(fetchedDir)
+    ? readdirSync(fetchedDir).filter((f) => f.endsWith(".md"))
+    : [];
+  const staticFiles = existsSync(staticDir)
+    ? readdirSync(staticDir).filter((f) => f.endsWith(".md"))
+    : [];
+  const files = [...new Set([...fetchedFiles, ...staticFiles])];
 
   for (const file of files) {
     test(`${file}: produces non-empty chunks`, () => {

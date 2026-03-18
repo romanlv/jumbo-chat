@@ -2,14 +2,14 @@ import { rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { getTableName } from "drizzle-orm";
-import * as schema from "../db/schema.ts";
 import {
   closeDb,
   db,
   ensureVectorIndex,
   initDb,
   runMigrations,
-} from "../lib/db.ts";
+} from "../db.ts";
+import * as schema from "../schema.ts";
 
 const allTables = Object.values(schema).filter(
   (v) => typeof v === "object" && v !== null && "getSQL" in v,

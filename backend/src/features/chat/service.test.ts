@@ -7,8 +7,8 @@ import {
   test,
 } from "bun:test";
 import { eq } from "drizzle-orm";
-import * as schema from "../../db/schema.ts";
-import { db } from "../../lib/db.ts";
+import { db } from "../../db.ts";
+import * as schema from "../../schema.ts";
 import {
   resetTestData,
   setupTestDb,

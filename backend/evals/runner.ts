@@ -1,5 +1,5 @@
-import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { initDb } from "../src/db.ts";
 import { createChatService } from "../src/features/chat/service.ts";
 import type { SSEEvent } from "../src/features/chat/types.ts";
 
@@ -135,8 +135,10 @@ async function runCase(
 }
 
 async function main() {
+  initDb();
+
   const casesPath = resolve(import.meta.dirname as string, "cases.json");
-  const allCases: EvalCase[] = JSON.parse(readFileSync(casesPath, "utf-8"));
+  const allCases: EvalCase[] = await Bun.file(casesPath).json();
 
   const filter = process.argv[2];
   const cases = filter
@@ -170,7 +172,7 @@ async function main() {
   console.log(`\n${passed}/${results.length} passed, ${failed} failed`);
 
   const resultsPath = resolve(import.meta.dirname as string, "results.json");
-  writeFileSync(resultsPath, JSON.stringify(results, null, 2));
+  await Bun.write(resultsPath, JSON.stringify(results, null, 2));
   console.log(`Results saved to ${resultsPath}`);
 
   if (failed > 0) process.exit(1);

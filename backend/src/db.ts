@@ -1,11 +1,15 @@
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import { migrate } from "drizzle-orm/libsql/migrator";
-import * as schema from "../db/schema.ts";
+import { config } from "./config.ts";
+import * as schema from "./schema.ts";
 
 export let db: ReturnType<typeof drizzle<typeof schema>>;
 
-export function initDb(url: string, authToken?: string): void {
+export function initDb(
+  url = config.db.url,
+  authToken = config.db.authToken,
+): void {
   const client = createClient({ url, authToken });
   db = drizzle(client, { schema });
 }

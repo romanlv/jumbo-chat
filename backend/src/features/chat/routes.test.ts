@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { closeDb } from "../../lib/db.ts";
+import { closeDb } from "../../db.ts";
 import { buildServer } from "../../server.ts";
 
 // Route tests using fastify.inject()

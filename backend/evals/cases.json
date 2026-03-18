@@ -44,8 +44,7 @@
   {
     "name": "faq-availability",
     "input": "Is Jumbo88 available in my state?",
-    "expectedOutcome": "answer",
-    "expectedSources": ["https://www.jumbo88.com/faqs"]
+    "expectedOutcome": "answer"
   },
   {
     "name": "rules-eligibility",

@@ -1,9 +1,7 @@
 import { tool } from "ai";
 import { z } from "zod";
-import type { VectorStore } from "../knowledge/vector-store.ts";
+import { searchKnowledge } from "../knowledge/service.ts";
 import type { ChatSource } from "./types.ts";
-
-const RELEVANCE_THRESHOLD = 0.7;
 
 export interface ToolState {
   sources: ChatSource[];
@@ -12,15 +10,13 @@ export interface ToolState {
 }
 
 interface ToolDeps {
-  vectorStore: VectorStore;
-  embedFn: (text: string) => Promise<number[]>;
   sessionId: string;
   state: ToolState;
   onEscalate: (reason: string) => Promise<void>;
 }
 
 export function createTools(deps: ToolDeps) {
-  const { vectorStore, embedFn, state, onEscalate } = deps;
+  const { state, onEscalate } = deps;
 
   return {
     search_knowledge_base: tool({
@@ -30,14 +26,9 @@ export function createTools(deps: ToolDeps) {
         query: z.string().describe("The search query"),
       }),
       execute: async ({ query }) => {
-        const embedding = await embedFn(query);
-        const results = await vectorStore.search(embedding, 5);
+        const results = await searchKnowledge(query, 5);
 
-        const relevant = results.filter(
-          (r) => r.distance < RELEVANCE_THRESHOLD,
-        );
-
-        for (const r of relevant) {
+        for (const r of results) {
           const exists = state.sources.some(
             (s) => s.sourceUrl === r.sourceUrl && s.chunkIndex === r.chunkIndex,
           );
@@ -46,12 +37,12 @@ export function createTools(deps: ToolDeps) {
               sourceUrl: r.sourceUrl,
               title: r.title,
               chunkIndex: r.chunkIndex,
-              score: 1 - r.distance,
+              score: r.score,
             });
           }
         }
 
-        if (relevant.length === 0) {
+        if (results.length === 0) {
           return {
             results: [],
             message: "No relevant results found in the knowledge base.",
@@ -59,11 +50,11 @@ export function createTools(deps: ToolDeps) {
         }
 
         return {
-          results: relevant.map((r) => ({
+          results: results.map((r) => ({
             sourceUrl: r.sourceUrl,
             title: r.title,
             content: r.content,
-            score: 1 - r.distance,
+            score: r.score,
           })),
         };
       },

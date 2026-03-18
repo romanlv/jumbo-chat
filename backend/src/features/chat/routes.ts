@@ -1,13 +1,9 @@
 import type { FastifyPluginAsync } from "fastify";
-import { getDb } from "../../lib/db.ts";
-import { LibSQLVectorStore } from "../knowledge/vector-store.ts";
 import { createChatService } from "./service.ts";
 import { ChatRequestSchema } from "./types.ts";
 
 const chatRoutes: FastifyPluginAsync = async (fastify) => {
-  const vectorStore = new LibSQLVectorStore(getDb());
-
-  const chatService = createChatService({ vectorStore });
+  const chatService = createChatService();
 
   fastify.post(
     "/",

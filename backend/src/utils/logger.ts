@@ -1,7 +1,7 @@
 import pino from "pino";
 import { config } from "../config.ts";
 
-export const logger = pino({
+const loggerConfig = {
   level: config.isTest ? "silent" : config.isDev ? "debug" : "info",
   transport: config.isDev
     ? {
@@ -9,15 +9,8 @@ export const logger = pino({
         options: { colorize: true },
       }
     : undefined,
-});
+};
 
-export const fastifyLogger = config.isTest
-  ? false
-  : config.isDev
-    ? {
-        transport: {
-          target: "pino-pretty",
-          options: { colorize: true },
-        },
-      }
-    : true;
+export const logger = pino(loggerConfig);
+
+export const fastifyLogger = config.isTest ? false : loggerConfig;

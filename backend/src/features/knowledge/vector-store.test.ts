@@ -1,8 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { rmSync } from "node:fs";
 import type { Row } from "@libsql/client";
-import { getDb, resetDb } from "../../lib/db.ts";
-import { initTestDb } from "../../utils/test-utils.ts";
+import { getDb } from "../../lib/db.ts";
+import { cleanupTestDb, initTestDb } from "../../utils/test-utils.ts";
 import {
   type ChunkWithEmbedding,
   LibSQLVectorStore,
@@ -44,21 +43,13 @@ function firstResult(results: VectorSearchResult[]): VectorSearchResult {
 
 describe("LibSQLVectorStore", () => {
   let store: LibSQLVectorStore;
-  let dbPath: string;
 
   beforeEach(async () => {
-    dbPath = await initTestDb();
+    await initTestDb();
     store = new LibSQLVectorStore(getDb());
   });
 
-  afterEach(() => {
-    resetDb();
-    try {
-      rmSync(dbPath, { force: true });
-      rmSync(`${dbPath}-wal`, { force: true });
-      rmSync(`${dbPath}-shm`, { force: true });
-    } catch {}
-  });
+  afterEach(cleanupTestDb);
 
   test("upsertChunks inserts retrievable chunks", async () => {
     const chunk = makeChunk({ chunkId: "test-1", content: "Hello world" });

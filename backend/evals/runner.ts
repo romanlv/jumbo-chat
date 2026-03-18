@@ -1,7 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { initChatService } from "../src/cli.ts";
-import type { createChatService } from "../src/features/chat/service.ts";
+import { createChatService } from "../src/features/chat/service.ts";
 import type { SSEEvent } from "../src/features/chat/types.ts";
 
 interface EvalCase {
@@ -149,7 +148,7 @@ async function main() {
     process.exit(1);
   }
 
-  const chatService = initChatService();
+  const chatService = createChatService();
 
   console.log(`Running ${cases.length} eval cases...\n`);
 

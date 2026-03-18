@@ -1,7 +1,9 @@
+const nodeEnv = process.env.NODE_ENV ?? "development";
+
 export const config = {
-  nodeEnv: process.env.NODE_ENV ?? "development",
-  isDev: (process.env.NODE_ENV ?? "development") === "development",
-  isTest: process.env.NODE_ENV === "test",
+  nodeEnv,
+  isDev: nodeEnv === "development",
+  isTest: nodeEnv === "test",
 
   server: {
     port: Number(process.env.PORT ?? 4089),
@@ -15,9 +17,7 @@ export const config = {
   db: {
     url:
       process.env.TURSO_DATABASE_URL ??
-      ((process.env.NODE_ENV ?? "development") === "test"
-        ? "file:test.db"
-        : "file:local.db"),
+      (nodeEnv === "test" ? "file:test.db" : "file:local.db"),
     authToken: process.env.TURSO_AUTH_TOKEN,
   },
 

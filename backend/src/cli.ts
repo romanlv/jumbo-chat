@@ -2,13 +2,6 @@ import { resolve } from "node:path";
 import { createInterface } from "node:readline";
 import { parseArgs } from "node:util";
 import { createChatService } from "./features/chat/service.ts";
-import { LibSQLVectorStore } from "./features/knowledge/vector-store.ts";
-import { getDb } from "./lib/db.ts";
-
-export function initChatService() {
-  const vectorStore = new LibSQLVectorStore(getDb());
-  return createChatService({ vectorStore });
-}
 
 async function sendMessage(
   chatService: ReturnType<typeof createChatService>,
@@ -116,7 +109,7 @@ async function main() {
       ? 1
       : 0;
 
-  const chatService = initChatService();
+  const chatService = createChatService();
 
   if (values.interactive) {
     await repl(chatService, verbosity);

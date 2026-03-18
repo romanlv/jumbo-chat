@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { getDb, resetDb } from "../../lib/db.ts";
-import { initTestDb } from "../../utils/test-utils.ts";
+import { getDb } from "../../lib/db.ts";
+import { cleanupTestDb, initTestDb } from "../../utils/test-utils.ts";
 import {
   LibSQLVectorStore,
   type VectorSearchResult,
@@ -24,10 +24,9 @@ const fakeEmbedFn = async (texts: string[]): Promise<number[][]> => {
 describe("runIngestion", () => {
   let store: LibSQLVectorStore;
   let tmpDir: string;
-  let dbPath: string;
 
   beforeEach(async () => {
-    dbPath = await initTestDb();
+    await initTestDb();
     store = new LibSQLVectorStore(getDb());
 
     tmpDir = resolve(
@@ -38,15 +37,10 @@ describe("runIngestion", () => {
   });
 
   afterEach(() => {
-    resetDb();
+    cleanupTestDb();
     if (existsSync(tmpDir)) {
       rmSync(tmpDir, { recursive: true, force: true });
     }
-    try {
-      rmSync(dbPath, { force: true });
-      rmSync(`${dbPath}-wal`, { force: true });
-      rmSync(`${dbPath}-shm`, { force: true });
-    } catch {}
   });
 
   test("ingests markdown files into vector store", async () => {

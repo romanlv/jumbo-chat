@@ -6,8 +6,6 @@ import { config } from "../../config.ts";
 import * as schema from "../../db/schema.ts";
 import { getDrizzle } from "../../lib/db.ts";
 import { NotFoundError } from "../../lib/errors.ts";
-import { generateEmbedding } from "../knowledge/embeddings.ts";
-import type { VectorStore } from "../knowledge/vector-store.ts";
 import { SYSTEM_PROMPT } from "./system-prompt.ts";
 import { createTools, type ToolState } from "./tools.ts";
 import type { ChatSource, SSEEvent } from "./types.ts";
@@ -104,12 +102,7 @@ function createModel() {
   return provider(modelId);
 }
 
-interface ChatServiceDeps {
-  vectorStore: VectorStore;
-}
-
-export function createChatService(deps: ChatServiceDeps) {
-  const { vectorStore } = deps;
+export function createChatService() {
   const model = createModel();
 
   async function getOrCreateSession(sessionId?: string) {
@@ -221,8 +214,6 @@ export function createChatService(deps: ChatServiceDeps) {
     }> = [];
 
     const tools = createTools({
-      vectorStore,
-      embedFn: generateEmbedding,
       sessionId: session.id,
       state,
       onEscalate: (reason) => flagEscalated(session.id, reason),

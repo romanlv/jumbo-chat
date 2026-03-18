@@ -6,9 +6,7 @@ on:
 jobs:
   ingest:
     runs-on: ubuntu-latest
-    container: ghcr.io/railwayapp/cli:latest
     env:
-      SVC_ID: backend
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
     steps:
       - uses: actions/checkout@v4
@@ -18,10 +16,13 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Install Railway CLI
+        run: bash <(curl -fsSL cli.new)
+
       - name: Install dependencies
         working-directory: ./backend
         run: bun install --frozen-lockfile
 
       - name: Run ingestion
         working-directory: ./backend
-        run: railway run --service=${{ env.SVC_ID }} bun run ingest
+        run: railway run --service=backend bun run ingest

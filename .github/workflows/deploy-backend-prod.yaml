@@ -1,0 +1,17 @@
+name: Deploy Backend to Prod
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    container: ghcr.io/railwayapp/cli:latest
+    env:
+      SVC_ID: backend
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy backend to Railway
+        working-directory: ./backend
+        run: railway up --service=${{ env.SVC_ID }}

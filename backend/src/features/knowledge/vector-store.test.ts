@@ -1,9 +1,8 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { rmSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
 import type { Row } from "@libsql/client";
-import { createClient } from "@libsql/client";
+import { getDb, resetDb } from "../../lib/db.ts";
+import { initTestDb } from "../../utils/test-utils.ts";
 import {
   type ChunkWithEmbedding,
   LibSQLVectorStore,
@@ -45,21 +44,15 @@ function firstResult(results: VectorSearchResult[]): VectorSearchResult {
 
 describe("LibSQLVectorStore", () => {
   let store: LibSQLVectorStore;
-  let client: ReturnType<typeof createClient>;
   let dbPath: string;
 
   beforeEach(async () => {
-    dbPath = join(
-      tmpdir(),
-      `test-vector-${Date.now()}-${Math.random().toString(36).slice(2)}.db`,
-    );
-    client = createClient({ url: `file:${dbPath}` });
-    store = new LibSQLVectorStore(client);
-    await store.initialize();
+    dbPath = await initTestDb();
+    store = new LibSQLVectorStore(getDb());
   });
 
   afterEach(() => {
-    client.close();
+    resetDb();
     try {
       rmSync(dbPath, { force: true });
       rmSync(`${dbPath}-wal`, { force: true });
@@ -67,15 +60,11 @@ describe("LibSQLVectorStore", () => {
     } catch {}
   });
 
-  test("initialize creates table without error", async () => {
-    await store.initialize();
-  });
-
   test("upsertChunks inserts retrievable chunks", async () => {
     const chunk = makeChunk({ chunkId: "test-1", content: "Hello world" });
     await store.upsertChunks([chunk]);
 
-    const result = await client.execute(
+    const result = await getDb().execute(
       "SELECT chunk_id, content FROM documents WHERE chunk_id = 'test-1'",
     );
     expect(result.rows).toHaveLength(1);
@@ -92,7 +81,7 @@ describe("LibSQLVectorStore", () => {
     });
     await store.upsertChunks([chunk2]);
 
-    const result = await client.execute(
+    const result = await getDb().execute(
       "SELECT content FROM documents WHERE chunk_id = 'test-replace'",
     );
     expect(result.rows).toHaveLength(1);
@@ -159,14 +148,14 @@ describe("LibSQLVectorStore", () => {
 
     await store.deleteBySourceUrl(url1);
 
-    const result = await client.execute("SELECT chunk_id FROM documents");
+    const result = await getDb().execute("SELECT chunk_id FROM documents");
     expect(result.rows).toHaveLength(1);
     expect(firstRow(result.rows).chunk_id).toBe("keep-1");
   });
 
   test("upsertChunks with empty array is no-op", async () => {
     await store.upsertChunks([]);
-    const result = await client.execute(
+    const result = await getDb().execute(
       "SELECT count(*) as cnt FROM documents",
     );
     expect(firstRow(result.rows).cnt).toBe(0);

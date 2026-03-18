@@ -13,7 +13,11 @@ export const config = {
   },
 
   db: {
-    url: process.env.TURSO_DATABASE_URL ?? "file:local.db",
+    url:
+      process.env.TURSO_DATABASE_URL ??
+      ((process.env.NODE_ENV ?? "development") === "test"
+        ? "file:test.db"
+        : "file:local.db"),
     authToken: process.env.TURSO_AUTH_TOKEN,
   },
 
@@ -23,5 +27,11 @@ export const config = {
 
   firecrawl: {
     apiKey: process.env.FIRECRAWL_API_KEY,
+  },
+
+  anthropic: {
+    apiKey: process.env.ANTHROPIC_API_KEY,
+    authToken: process.env.ANTHROPIC_AUTH_TOKEN,
+    model: process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-6",
   },
 };

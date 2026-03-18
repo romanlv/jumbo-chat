@@ -45,8 +45,6 @@ export async function runIngestion(deps: IngestionDeps): Promise<void> {
   const kbDir = resolve(dataDir, "kb");
   mkdirSync(kbDir, { recursive: true });
 
-  await store.initialize();
-
   if (shouldFetch) {
     if (!fetchPage) throw new Error("fetchPage required when --fetch is set");
     console.log("Fetching pages...");

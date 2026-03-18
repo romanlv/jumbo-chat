@@ -11,9 +11,15 @@
     "format": "biome format --write .",
     "check": "biome check --write .",
     "test": "bun test",
-    "ingest": "bun run src/features/ingestion/ingest.ts"
+    "ingest": "bun run src/features/ingestion/ingest.ts",
+    "cli": "bun run src/cli.ts",
+    "eval": "bun run evals/runner.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.58",
     "@ai-sdk/openai": "^3.0.41",
     "@fastify/cors": "^11.2.0",
     "@fastify/sse": "^0.4.0",

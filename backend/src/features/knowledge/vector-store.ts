@@ -21,7 +21,6 @@ export interface VectorSearchResult {
 }
 
 export interface VectorStore {
-  initialize(): Promise<void>;
   upsertChunks(chunks: ChunkWithEmbedding[]): Promise<void>;
   search(embedding: number[], topK?: number): Promise<VectorSearchResult[]>;
   deleteBySourceUrl(sourceUrl: string): Promise<void>;
@@ -29,24 +28,6 @@ export interface VectorStore {
 
 export class LibSQLVectorStore implements VectorStore {
   constructor(private client: Client) {}
-
-  async initialize(): Promise<void> {
-    await this.client.executeMultiple(`
-      CREATE TABLE IF NOT EXISTS documents (
-        rowid INTEGER PRIMARY KEY AUTOINCREMENT,
-        chunk_id TEXT NOT NULL UNIQUE,
-        source_url TEXT NOT NULL,
-        title TEXT NOT NULL,
-        priority INTEGER NOT NULL DEFAULT 2,
-        chunk_index INTEGER NOT NULL,
-        content TEXT NOT NULL,
-        embedding F32_BLOB(1536),
-        updated_at TEXT NOT NULL
-      );
-      CREATE INDEX IF NOT EXISTS idx_documents_embedding ON documents(libsql_vector_idx(embedding));
-      CREATE INDEX IF NOT EXISTS idx_documents_source_url ON documents(source_url);
-    `);
-  }
 
   async upsertChunks(chunks: ChunkWithEmbedding[]): Promise<void> {
     if (chunks.length === 0) return;

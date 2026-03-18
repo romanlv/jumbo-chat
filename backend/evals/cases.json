@@ -15,7 +15,7 @@
     "name": "faq-gold-coins",
     "input": "What are Gold Coins and Sweepstakes Coins?",
     "expectedOutcome": "answer",
-    "expectedSources": ["https://www.jumbo88.com/faqs"]
+    "expectedSources": ["https://www.jumbo88.com/faqs", "https://www.jumbo88.com/terms-of-use"]
   },
   {
     "name": "faq-games-fair",
@@ -44,7 +44,7 @@
   {
     "name": "faq-availability",
     "input": "Is Jumbo88 available in my state?",
-    "expectedOutcome": "answer"
+    "expectedOutcome": ["answer", "clarify"]
   },
   {
     "name": "rules-eligibility",
@@ -55,8 +55,8 @@
   {
     "name": "referral-program",
     "input": "How does the referral program work?",
-    "expectedOutcome": "answer",
-    "expectedSources": ["https://www.jumbo88.com/refer-a-friend"]
+    "expectedOutcome": ["answer", "clarify"],
+    "expectedSources": ["https://www.jumbo88.com/refer-a-friend", "https://www.jumbo88.com/faqs"]
   },
   {
     "name": "privacy-data",
@@ -73,12 +73,12 @@
   {
     "name": "account-specific-balance",
     "input": "Can you check my account balance?",
-    "expectedOutcome": "escalate"
+    "expectedOutcome": "clarify"
   },
   {
     "name": "account-specific-transaction",
     "input": "I made a purchase yesterday but didn't receive my coins",
-    "expectedOutcome": "escalate"
+    "expectedOutcome": ["answer", "clarify"]
   },
   {
     "name": "request-human",

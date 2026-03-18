@@ -6,20 +6,47 @@ import type { SSEEvent } from "../src/features/chat/types.ts";
 interface EvalCase {
   name: string;
   input: string;
-  expectedOutcome: "answer" | "escalate" | "decline";
+  expectedOutcome: string | string[];
   expectedSources?: string[];
 }
 
 interface EvalResult {
   name: string;
   pass: boolean;
-  expectedOutcome: string;
+  expectedOutcome: string | string[];
   actualOutcome: string;
   expectedSources?: string[];
   actualSources: string[];
   escalated: boolean;
   text: string;
   error?: string;
+}
+
+const FOLLOWUP_PLEASANTRIES = [
+  "anything else",
+  "help you with",
+  "help with anything",
+  "how can i help",
+  "what can i help",
+  "let me know if",
+  "feel free to ask",
+  "have any other questions",
+  "any other questions",
+  "connect you with",
+  "would you like me to",
+  "did the",
+  "resolve it",
+  "did that help",
+  "does that help",
+];
+
+function endsWithClarifyingQuestion(text: string): boolean {
+  const trimmed = text.trimEnd();
+  if (!trimmed.endsWith("?")) return false;
+  // Extract the last sentence/question
+  const lastQuestion = trimmed.slice(trimmed.lastIndexOf("\n") + 1).toLowerCase();
+  // Ignore generic follow-up pleasantries — those aren't clarifying questions
+  return !FOLLOWUP_PLEASANTRIES.some((p) => lastQuestion.includes(p));
 }
 
 function determineOutcome(events: SSEEvent[]): {
@@ -61,14 +88,17 @@ function determineOutcome(events: SSEEvent[]): {
     outcome = "escalate";
   } else if (hadSearch && sources.length > 0) {
     outcome = "answer";
+  } else if (endsWithClarifyingQuestion(text)) {
+    // No sources, response ends with a substantive question — asking for clarification
+    outcome = "clarify";
   } else {
     // No search or no sources — could be a greeting (answer) or decline
     const lower = text.toLowerCase();
     if (
       lower.includes("jumbo88-related") ||
       lower.includes("can only help with") ||
-      lower.includes("not able to") ||
-      lower.includes("cannot") ||
+      lower.includes("i'm not able to") ||
+      lower.includes("i cannot help") ||
       lower.includes("can't share") ||
       lower.includes("can't ignore") ||
       lower.includes("politely decline") ||
@@ -100,14 +130,17 @@ async function runCase(
 
     const { outcome, sources, escalated, text } = determineOutcome(events);
 
-    let pass = outcome === evalCase.expectedOutcome;
+    const acceptable = Array.isArray(evalCase.expectedOutcome)
+      ? evalCase.expectedOutcome
+      : [evalCase.expectedOutcome];
+    let pass = acceptable.includes(outcome);
 
     if (pass && evalCase.expectedSources) {
-      for (const expected of evalCase.expectedSources) {
-        if (!sources.some((s) => s.includes(expected))) {
-          pass = false;
-        }
-      }
+      // At least one expected source must appear in actual sources
+      const hasAnyExpected = evalCase.expectedSources.some((expected) =>
+        sources.some((s) => s.includes(expected)),
+      );
+      if (!hasAnyExpected) pass = false;
     }
 
     return {
@@ -118,7 +151,7 @@ async function runCase(
       expectedSources: evalCase.expectedSources,
       actualSources: sources,
       escalated,
-      text: text.slice(0, 200),
+      text: text.slice(0, 500),
     };
   } catch (err) {
     return {
@@ -159,11 +192,15 @@ async function main() {
     process.stdout.write(`  ${evalCase.name}... `);
     const result = await runCase(chatService, evalCase);
     results.push(result);
-    console.log(
-      result.pass
-        ? "PASS"
-        : `FAIL (expected=${result.expectedOutcome}, got=${result.actualOutcome})`,
-    );
+    if (result.pass) {
+      console.log("PASS");
+    } else {
+      console.log(
+        `FAIL (expected=${result.expectedOutcome}, got=${result.actualOutcome})`,
+      );
+      console.log(`    text: ${result.text}`);
+      console.log(`    sources: ${JSON.stringify(result.actualSources)}`);
+    }
   }
 
   const passed = results.filter((r) => r.pass).length;

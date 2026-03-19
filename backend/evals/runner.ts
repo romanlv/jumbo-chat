@@ -88,11 +88,10 @@ function determineOutcome(events: SSEEvent[]): {
   let outcome: string;
   if (escalated) {
     outcome = "escalate";
+  } else if (endsWithClarifyingQuestion(text)) {
+    outcome = "clarify";
   } else if (hadSearch && sources.length > 0) {
     outcome = "answer";
-  } else if (endsWithClarifyingQuestion(text)) {
-    // No sources, response ends with a substantive question — asking for clarification
-    outcome = "clarify";
   } else {
     // No search or no sources — could be a greeting (answer) or decline
     const lower = text.toLowerCase();

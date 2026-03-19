@@ -1,0 +1,24 @@
+{
+  "private": true,
+  "scripts": {
+    "prepare": "simple-git-hooks"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "lint-staged": {
+    "backend/**/*.{ts,tsx,js,jsx}": [
+      "bun --cwd backend run check",
+      "bun --cwd backend run typecheck",
+      "bun --cwd backend test"
+    ],
+    "frontend/**/*.{ts,tsx,js,jsx}": [
+      "bun --cwd frontend run check",
+      "bun --cwd frontend run typecheck"
+    ]
+  },
+  "devDependencies": {
+    "lint-staged": "^16.1.0",
+    "simple-git-hooks": "^2.13.0"
+  }
+}

@@ -2,6 +2,8 @@
 
 AI-powered support chatbot for Jumbo88 that answers questions using public website content. Uses retrieval-augmented generation (RAG) via LLM tool calls, streams responses over SSE, and escalates to a human when the bot can't help.
 
+**Live demo:** https://frontend-production-886c.up.railway.app/
+
 ## Architecture
 
 ```

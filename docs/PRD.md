@@ -308,17 +308,17 @@ The project is implemented in stages, but the submission is expected to present 
 
 ### Stage 3 — Frontend
 
-- [ ] React chat UI with `useChat` hook (streaming, loading state, message history)
-- [ ] Escalation UI (visual indicator when chat is escalated)
-- [ ] Source citations display
+- [x] React chat UI with `useChat` hook (streaming, loading state, message history)
+- [x] Escalation UI (visual indicator when chat is escalated)
+- [x] Source citations display
 - [ ] Tests: component tests as needed
 
 ### Stage 4 — Admin + Deploy
 
-- [ ] Admin UI: session list, session detail, escalation review workflow
-- [ ] Admin API: list sessions, view session detail, update status
-- [ ] Deploy backend (Railway or Fly.io), frontend (Vercel), Turso for prod DB
-- [ ] README with setup instructions
+- [x] Admin UI: session list, session detail, escalation review workflow
+- [x] Admin API: list sessions, view session detail, update status
+- [x] Deploy backend (Railway or Fly.io), frontend (Vercel), Turso for prod DB
+- [x] README with setup instructions
 - [ ] Tests: admin endpoints, session lifecycle
 
 ---

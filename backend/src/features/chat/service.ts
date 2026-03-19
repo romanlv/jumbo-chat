@@ -136,7 +136,11 @@ export async function* filterStreamEvents(
 }
 
 export function createChatService() {
-  const model = createModel();
+  let _model: ReturnType<typeof createModel> | undefined;
+  function getModel() {
+    if (!_model) _model = createModel();
+    return _model;
+  }
   async function getOrCreateSession(sessionId?: string) {
     const now = new Date().toISOString();
 
@@ -256,7 +260,7 @@ export function createChatService() {
       : SYSTEM_PROMPT;
 
     const result = streamText({
-      model,
+      model: getModel(),
       maxOutputTokens: 4096,
       system: systemPrompt,
       messages,

@@ -4,12 +4,8 @@
     "pass": true,
     "expectedOutcome": "answer",
     "actualOutcome": "answer",
-    "expectedSources": [
-      "https://www.jumbo88.com/faqs"
-    ],
-    "actualSources": [
-      "https://www.jumbo88.com/faqs"
-    ],
+    "expectedSources": ["https://www.jumbo88.com/faqs"],
+    "actualSources": ["https://www.jumbo88.com/faqs"],
     "escalated": false,
     "text": "\n\nAccording to our FAQs, creating an account on Jumbo88 is straightforward. Just click the \"Sign Up\" button on the homepage and choose one of three sign-up options, including signing up with your email. From there, follow the prompts and you'll be ready to play.\n\nIf you run into any issues during the sign-up process, feel free to let me know and I'll do my best to help."
   },
@@ -18,9 +14,7 @@
     "pass": true,
     "expectedOutcome": "answer",
     "actualOutcome": "answer",
-    "expectedSources": [
-      "https://www.jumbo88.com/faqs"
-    ],
+    "expectedSources": ["https://www.jumbo88.com/faqs"],
     "actualSources": [
       "https://www.jumbo88.com/faqs",
       "https://www.jumbo88.com/terms-of-use"
@@ -49,9 +43,7 @@
     "pass": true,
     "expectedOutcome": "answer",
     "actualOutcome": "answer",
-    "expectedSources": [
-      "https://www.jumbo88.com/faqs"
-    ],
+    "expectedSources": ["https://www.jumbo88.com/faqs"],
     "actualSources": [
       "https://www.jumbo88.com/faqs",
       "https://www.jumbo88.com/terms-of-use"
@@ -64,12 +56,8 @@
     "pass": true,
     "expectedOutcome": "answer",
     "actualOutcome": "answer",
-    "expectedSources": [
-      "https://www.jumbo88.com/faqs"
-    ],
-    "actualSources": [
-      "https://www.jumbo88.com/faqs"
-    ],
+    "expectedSources": ["https://www.jumbo88.com/faqs"],
+    "actualSources": ["https://www.jumbo88.com/faqs"],
     "escalated": false,
     "text": "\n\nAccording to our FAQ, here is how to redeem your Sweepstakes Coins for cash:\n\nClick \"Redeem\" in your account menu, select your preferred redemption method (either ACH bank transfer or push to card), and follow the prompts. Note that first-time redemptions require ID verification.\n\nA couple of things to keep in mind:\n\nYou need a minimum of 100 Sweepstakes Coins to redeem. Once your redemption is processed, funds typically arrive within 1 to 3 business days, though Jumbo88 aims to process all re"
   },
@@ -78,12 +66,8 @@
     "pass": true,
     "expectedOutcome": "answer",
     "actualOutcome": "answer",
-    "expectedSources": [
-      "https://www.jumbo88.com/faqs"
-    ],
-    "actualSources": [
-      "https://www.jumbo88.com/faqs"
-    ],
+    "expectedSources": ["https://www.jumbo88.com/faqs"],
+    "actualSources": ["https://www.jumbo88.com/faqs"],
     "escalated": false,
     "text": "\n\nYes! According to our FAQs, Jumbo88 works flawlessly on all smartphones and tablets. You can enjoy the platform from any mobile device without any issues.\n\nIs there anything else I can help you with?"
   },
@@ -92,9 +76,7 @@
     "pass": true,
     "expectedOutcome": "answer",
     "actualOutcome": "answer",
-    "expectedSources": [
-      "https://www.jumbo88.com/faqs"
-    ],
+    "expectedSources": ["https://www.jumbo88.com/faqs"],
     "actualSources": [
       "https://www.jumbo88.com/terms-of-use",
       "https://www.jumbo88.com/faqs"
@@ -105,10 +87,7 @@
   {
     "name": "faq-availability",
     "pass": true,
-    "expectedOutcome": [
-      "answer",
-      "clarify"
-    ],
+    "expectedOutcome": ["answer", "clarify"],
     "actualOutcome": "clarify",
     "actualSources": [],
     "escalated": false,
@@ -119,22 +98,15 @@
     "pass": true,
     "expectedOutcome": "answer",
     "actualOutcome": "answer",
-    "expectedSources": [
-      "https://www.jumbo88.com/sweepstakes-rules"
-    ],
-    "actualSources": [
-      "https://www.jumbo88.com/sweepstakes-rules"
-    ],
+    "expectedSources": ["https://www.jumbo88.com/sweepstakes-rules"],
+    "actualSources": ["https://www.jumbo88.com/sweepstakes-rules"],
     "escalated": false,
     "text": "\n\nAccording to our Sweepstakes Rules, participation is open to legal residents of the United States who are 18 years of age or older at the time of entry.\n\nHowever, residents of the following states are not eligible: California, Connecticut, Delaware, Idaho, Illinois, Louisiana, Maryland, Michigan, Montana, Nevada, New Jersey, New York, Pennsylvania, Rhode Island, Tennessee, Washington, and West Virginia.\n\nThe sweepstakes is also void where prohibited by law, and residents outside the United Sta"
   },
   {
     "name": "referral-program",
     "pass": true,
-    "expectedOutcome": [
-      "answer",
-      "clarify"
-    ],
+    "expectedOutcome": ["answer", "clarify"],
     "actualOutcome": "clarify",
     "expectedSources": [
       "https://www.jumbo88.com/refer-a-friend",
@@ -152,12 +124,8 @@
     "pass": true,
     "expectedOutcome": "answer",
     "actualOutcome": "answer",
-    "expectedSources": [
-      "https://www.jumbo88.com/privacy-policy"
-    ],
-    "actualSources": [
-      "https://www.jumbo88.com/privacy-policy"
-    ],
+    "expectedSources": ["https://www.jumbo88.com/privacy-policy"],
+    "actualSources": ["https://www.jumbo88.com/privacy-policy"],
     "escalated": false,
     "text": "\n\nAccording to Jumbo88's Privacy Policy, the platform collects several types of information about you:\n\nProfile Data, such as your email address, password, and user settings.\n\nPersonal Identifiers, such as your first and last name, home address, and date of birth.\n\nUsage Data, which includes information about how you use the site and services. This covers things like email open and click statistics, game play activity, player stats, referring and exit pages, and clickstream data.\n\nThe Privacy Po"
   },
@@ -166,22 +134,15 @@
     "pass": true,
     "expectedOutcome": "answer",
     "actualOutcome": "answer",
-    "expectedSources": [
-      "https://www.jumbo88.com/faqs"
-    ],
-    "actualSources": [
-      "https://www.jumbo88.com/faqs"
-    ],
+    "expectedSources": ["https://www.jumbo88.com/faqs"],
+    "actualSources": ["https://www.jumbo88.com/faqs"],
     "escalated": false,
     "text": "\n\nAccording to our FAQ and Troubleshooting Guide, here are the steps to try when a game freezes:\n\n1. Refresh the page.\n2. Clear your browser cache.\n3. Try a different browser.\n4. Check your internet connection.\n5. If you are on mobile, try closing and reopening the browser app.\n\nIf the issue continues after trying those steps, please contact support with a screenshot or description of what happened. Would you like help with anything else?"
   },
   {
     "name": "troubleshoot-geolocation",
     "pass": true,
-    "expectedOutcome": [
-      "answer",
-      "clarify"
-    ],
+    "expectedOutcome": ["answer", "clarify"],
     "actualOutcome": "clarify",
     "actualSources": [],
     "escalated": false,
@@ -190,10 +151,7 @@
   {
     "name": "troubleshoot-vpn",
     "pass": true,
-    "expectedOutcome": [
-      "answer",
-      "clarify"
-    ],
+    "expectedOutcome": ["answer", "clarify"],
     "actualOutcome": "answer",
     "actualSources": [
       "https://www.jumbo88.com/privacy-policy",
@@ -207,9 +165,7 @@
     "pass": true,
     "expectedOutcome": "answer",
     "actualOutcome": "answer",
-    "actualSources": [
-      "https://www.jumbo88.com/faqs"
-    ],
+    "actualSources": ["https://www.jumbo88.com/faqs"],
     "escalated": false,
     "text": "I'm sorry to hear you're having trouble logging in. Let me look into this for you.\n\nOur Troubleshooting Guide has some steps that may fix this. Here is what to try:\n\n1. Refresh the page and try again.\n2. Clear your browser cache and cookies, then reload.\n3. Try a different browser or open an incognito/private window.\n4. Make sure you are using the correct email address for your account.\n5. If you think the issue might be a forgotten password, click \"Forgot Password?\" on the login page to get a r"
   },
@@ -225,14 +181,9 @@
   {
     "name": "account-specific-transaction",
     "pass": true,
-    "expectedOutcome": [
-      "answer",
-      "clarify"
-    ],
+    "expectedOutcome": ["answer", "clarify"],
     "actualOutcome": "answer",
-    "actualSources": [
-      "https://www.jumbo88.com/sweepstakes-rules"
-    ],
+    "actualSources": ["https://www.jumbo88.com/sweepstakes-rules"],
     "escalated": false,
     "text": "I'm sorry to hear that. Let me look into this for you.\n\nThe knowledge base doesn't have specific instructions for this situation, but before I connect you with a human agent, I have a couple of quick questions.\n\nCan you confirm whether the payment was charged to your account (for example, on your bank or card statement)? Also, are you seeing the purchase in your transaction history on the platform but the coins just haven't been credited, or is the purchase not showing up at all?\n\nThat will help"
   },

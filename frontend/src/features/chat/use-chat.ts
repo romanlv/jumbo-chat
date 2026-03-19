@@ -107,6 +107,16 @@ export function useChat() {
                 }
                 break;
 
+              case "error":
+                setError(event.message);
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    m.id === assistantId ? { ...m, isStreaming: false } : m,
+                  ),
+                );
+                setIsLoading(false);
+                return;
+
               case "done":
                 setMessages((prev) =>
                   prev.map((m) =>

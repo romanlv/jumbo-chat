@@ -26,4 +26,5 @@ export type SSEEvent =
       reason?: string;
       sources: ChatSource[];
     }
+  | { type: "error"; message: string }
   | { type: "done" };

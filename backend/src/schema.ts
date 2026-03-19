@@ -48,14 +48,18 @@ export const sessions = sqliteTable("sessions", {
   updatedAt: text("updated_at").notNull(),
 });
 
-export const messages = sqliteTable("messages", {
-  id: text("id").primaryKey(),
-  sessionId: text("session_id")
-    .notNull()
-    .references(() => sessions.id),
-  role: text("role").notNull(),
-  content: text("content").notNull(),
-  sources: text("sources"),
-  toolCalls: text("tool_calls"),
-  createdAt: text("created_at").notNull(),
-});
+export const messages = sqliteTable(
+  "messages",
+  {
+    id: text("id").primaryKey(),
+    sessionId: text("session_id")
+      .notNull()
+      .references(() => sessions.id),
+    role: text("role").notNull(),
+    content: text("content").notNull(),
+    sources: text("sources"),
+    toolCalls: text("tool_calls"),
+    createdAt: text("created_at").notNull(),
+  },
+  (table) => [index("idx_messages_session_id").on(table.sessionId)],
+);

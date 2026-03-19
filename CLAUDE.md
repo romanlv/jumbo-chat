@@ -45,3 +45,9 @@ Shared UI primitives live in `src/components/ui/` (shadcn). Shared utilities liv
 - Biome for linting and formatting (not ESLint/Prettier).
 - TypeBox (`@sinclair/typebox`) for backend request/response schemas.
 - shadcn/ui + Tailwind CSS for frontend components.
+
+## Deployment & Debugging
+
+- Hosted on **Railway**. Deploy via GitHub Actions (`workflow_dispatch`).
+- Production logs: run `railway logs` from the `backend/` or `frontend/` directory (requires Railway CLI linked to the project).
+- Backend uses Pino structured logging (JSON in production, pretty in dev).

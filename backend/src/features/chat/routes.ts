@@ -24,11 +24,21 @@ const chatRoutes: FastifyPluginAsync = async (fastify) => {
 
       return reply.sse.send(
         (async function* () {
-          for await (const event of events) {
-            if (event.type === "tool-call" || event.type === "tool-result") {
-              continue;
+          try {
+            for await (const event of events) {
+              if (event.type === "tool-call" || event.type === "tool-result") {
+                continue;
+              }
+              yield { data: event };
             }
-            yield { data: event };
+          } catch (err) {
+            request.log.error(err, "SSE stream error");
+            yield {
+              data: {
+                type: "error" as const,
+                message: "Something went wrong. Please try again.",
+              },
+            };
           }
         })(),
       );

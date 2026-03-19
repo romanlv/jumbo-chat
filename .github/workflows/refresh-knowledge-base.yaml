@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -25,4 +26,4 @@ jobs:
 
       - name: Run ingestion
         working-directory: ./backend
-        run: railway run --service=backend bun run ingest
+        run: railway run --service=backend bun run ingest -- --fetch

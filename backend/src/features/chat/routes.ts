@@ -25,6 +25,9 @@ const chatRoutes: FastifyPluginAsync = async (fastify) => {
       return reply.sse.send(
         (async function* () {
           for await (const event of events) {
+            if (event.type === "tool-call" || event.type === "tool-result") {
+              continue;
+            }
             yield { data: event };
           }
         })(),

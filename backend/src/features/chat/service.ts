@@ -123,7 +123,7 @@ export async function* filterStreamEvents(
         yield { type: "text-delta", delta: "\n\n" };
         lastPartWasToolResult = false;
       }
-      yield { type: "text-delta", delta: part.text! };
+      yield { type: "text-delta", delta: part.text ?? "" };
     } else if (part.type === "tool-call") {
       if (!sentThinking) {
         yield { type: "thinking" };
@@ -287,10 +287,20 @@ export function createChatService() {
           yield { type: "thinking" };
           sentThinking = true;
         }
+        yield {
+          type: "tool-call" as const,
+          name: part.toolName,
+          args: part.input as Record<string, unknown>,
+        };
       } else if (part.type === "tool-result") {
         const lastCall = toolCallLog.findLast((c) => c.name === part.toolName);
         if (lastCall) lastCall.output = part.output;
         lastPartWasToolResult = true;
+        yield {
+          type: "tool-result" as const,
+          name: part.toolName,
+          result: part.output,
+        };
       }
     }
 

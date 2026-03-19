@@ -2,3 +2,4 @@
 .firecrawl
 .env
 backend/evals/results.json
+node_modules/*

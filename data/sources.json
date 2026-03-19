@@ -20,5 +20,11 @@
     "url": "https://www.jumbo88.com/refer-a-friend",
     "title": "Referral Program",
     "priority": 2
+  },
+  {
+    "file": "troubleshooting.md",
+    "url": "internal://troubleshooting",
+    "title": "Troubleshooting Guide",
+    "priority": 1
   }
 ]

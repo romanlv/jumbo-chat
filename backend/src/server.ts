@@ -5,6 +5,7 @@ import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import Fastify, { type FastifyError } from "fastify";
 import { config } from "./config.ts";
 import { ensureVectorIndex, initDb, runMigrations } from "./db.ts";
+import adminRoutes from "./features/admin/routes.ts";
 import chatRoutes from "./features/chat/routes.ts";
 import { AppError } from "./lib/errors.ts";
 import { fastifyLogger } from "./utils/logger.ts";
@@ -67,6 +68,7 @@ export async function buildServer() {
 
   // --- Feature routes ---
   await fastify.register(chatRoutes, { prefix: "/api/chat" });
+  await fastify.register(adminRoutes, { prefix: "/api/admin/sessions" });
 
   return fastify;
 }

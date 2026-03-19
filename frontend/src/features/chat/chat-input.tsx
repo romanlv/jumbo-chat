@@ -1,5 +1,5 @@
 import { ArrowUp } from "lucide-react";
-import { type KeyboardEvent, useCallback, useRef } from "react";
+import { type KeyboardEvent, useCallback, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 
 interface ChatInputProps {
@@ -11,6 +11,12 @@ interface ChatInputProps {
 export function ChatInput({ onSend, disabled, placeholder }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  useEffect(() => {
+    if (!disabled) {
+      textareaRef.current?.focus();
+    }
+  }, [disabled]);
+
   const handleSend = useCallback(() => {
     const value = textareaRef.current?.value.trim();
     if (!value || disabled) return;
@@ -18,6 +24,7 @@ export function ChatInput({ onSend, disabled, placeholder }: ChatInputProps) {
     if (textareaRef.current) {
       textareaRef.current.value = "";
       textareaRef.current.style.height = "auto";
+      textareaRef.current.focus();
     }
   }, [onSend, disabled]);
 

@@ -29,6 +29,7 @@ export function createTools(deps: ToolDeps) {
         const results = await searchKnowledge(query, 5);
 
         for (const r of results) {
+          if (r.sourceUrl.startsWith("internal://")) continue;
           const exists = state.sources.some(
             (s) => s.sourceUrl === r.sourceUrl && s.chunkIndex === r.chunkIndex,
           );

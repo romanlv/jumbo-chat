@@ -44,7 +44,9 @@ function endsWithClarifyingQuestion(text: string): boolean {
   const trimmed = text.trimEnd();
   if (!trimmed.endsWith("?")) return false;
   // Extract the last sentence/question
-  const lastQuestion = trimmed.slice(trimmed.lastIndexOf("\n") + 1).toLowerCase();
+  const lastQuestion = trimmed
+    .slice(trimmed.lastIndexOf("\n") + 1)
+    .toLowerCase();
   // Ignore generic follow-up pleasantries — those aren't clarifying questions
   return !FOLLOWUP_PLEASANTRIES.some((p) => lastQuestion.includes(p));
 }

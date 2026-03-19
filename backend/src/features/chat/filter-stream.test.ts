@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import type { SSEEvent } from "./types.ts";
 import { filterStreamEvents } from "./service.ts";
+import type { SSEEvent } from "./types.ts";
 
 async function* fakeStream(
   parts: Array<{ type: string; text?: string; toolName?: string }>,
@@ -92,9 +92,7 @@ describe("filterStreamEvents", () => {
   test("text-only stream emits no thinking event", async () => {
     const events = await collect(
       filterStreamEvents(
-        fakeStream([
-          { type: "text-delta", text: "Simple answer" },
-        ]),
+        fakeStream([{ type: "text-delta", text: "Simple answer" }]),
       ),
     );
 

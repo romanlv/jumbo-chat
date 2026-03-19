@@ -1,6 +1,7 @@
 import { resolve } from "node:path";
 import { createInterface } from "node:readline";
 import { parseArgs } from "node:util";
+import { initDb } from "./db.ts";
 import { createChatService } from "./features/chat/service.ts";
 
 async function sendMessage(
@@ -26,7 +27,25 @@ async function sendMessage(
         console.error(`\n[tool] ${event.name}("${summary}")`);
       }
     } else if (event.type === "tool-result" && verbosity >= 2) {
-      console.error(`[result] ${event.name}: ${JSON.stringify(event.result)}`);
+      const res = event.result as {
+        results?: Array<{ title?: string; content?: string; score?: number }>;
+        message?: string;
+      };
+      if (res.results && res.results.length > 0) {
+        console.error(`[chunks] ${res.results.length} chunk(s) fed to LLM:`);
+        for (const chunk of res.results) {
+          const c = chunk.content ?? "";
+          const preview =
+            c.length <= 120 ? c : `${c.slice(0, 60)}  ...  ${c.slice(-60)}`;
+          console.error(
+            `  [${chunk.score?.toFixed(3) ?? "?"}] ${chunk.title ?? "?"}: ${preview}`,
+          );
+        }
+      } else {
+        console.error(
+          `[result] ${event.name}: ${res.message ?? JSON.stringify(res)}`,
+        );
+      }
     } else if (event.type === "metadata") {
       resultSessionId = event.sessionId;
       escalated = event.escalated;
@@ -109,6 +128,7 @@ async function main() {
       ? 1
       : 0;
 
+  initDb();
   const chatService = createChatService();
 
   if (values.interactive) {

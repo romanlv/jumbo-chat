@@ -15,7 +15,10 @@
     "name": "faq-gold-coins",
     "input": "What are Gold Coins and Sweepstakes Coins?",
     "expectedOutcome": "answer",
-    "expectedSources": ["https://www.jumbo88.com/faqs", "https://www.jumbo88.com/terms-of-use"]
+    "expectedSources": [
+      "https://www.jumbo88.com/faqs",
+      "https://www.jumbo88.com/terms-of-use"
+    ]
   },
   {
     "name": "faq-games-fair",
@@ -56,7 +59,10 @@
     "name": "referral-program",
     "input": "How does the referral program work?",
     "expectedOutcome": ["answer", "clarify"],
-    "expectedSources": ["https://www.jumbo88.com/refer-a-friend", "https://www.jumbo88.com/faqs"]
+    "expectedSources": [
+      "https://www.jumbo88.com/refer-a-friend",
+      "https://www.jumbo88.com/faqs"
+    ]
   },
   {
     "name": "privacy-data",

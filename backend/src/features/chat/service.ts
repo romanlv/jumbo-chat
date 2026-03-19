@@ -123,7 +123,7 @@ export async function* filterStreamEvents(
         yield { type: "text-delta", delta: "\n\n" };
         lastPartWasToolResult = false;
       }
-      yield { type: "text-delta", delta: part.text! };
+      yield { type: "text-delta", delta: part.text ?? "" };
     } else if (part.type === "tool-call") {
       if (!sentThinking) {
         yield { type: "thinking" };
@@ -136,7 +136,11 @@ export async function* filterStreamEvents(
 }
 
 export function createChatService() {
-  const model = createModel();
+  let _model: ReturnType<typeof createModel> | undefined;
+  function getModel() {
+    if (!_model) _model = createModel();
+    return _model;
+  }
   async function getOrCreateSession(sessionId?: string) {
     const now = new Date().toISOString();
 
@@ -256,7 +260,7 @@ export function createChatService() {
       : SYSTEM_PROMPT;
 
     const result = streamText({
-      model,
+      model: getModel(),
       maxOutputTokens: 4096,
       system: systemPrompt,
       messages,
@@ -287,10 +291,20 @@ export function createChatService() {
           yield { type: "thinking" };
           sentThinking = true;
         }
+        yield {
+          type: "tool-call" as const,
+          name: part.toolName,
+          args: part.input as Record<string, unknown>,
+        };
       } else if (part.type === "tool-result") {
         const lastCall = toolCallLog.findLast((c) => c.name === part.toolName);
         if (lastCall) lastCall.output = part.output;
         lastPartWasToolResult = true;
+        yield {
+          type: "tool-result" as const,
+          name: part.toolName,
+          result: part.output,
+        };
       }
     }
 

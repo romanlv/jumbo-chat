@@ -38,6 +38,8 @@ The sweepstakes rules URL on the Jumbo site requires an authenticated user sessi
 
 - **User feedback on chat responses** — Add thumbs up/down buttons on each answer (similar to Claude's chat UI), optionally with a text input for details. This would help collect signal from real users on answer quality and identify gaps in the knowledge base.
 
+- **Embedding model** — The prototype uses OpenAI's `text-embedding-3-small`. Worth experimenting with Voyage AI (`voyage-3`) or Google Gemini embeddings (`gemini-embedding-001`) — both score higher on retrieval benchmarks. Gemini embeddings are free via API, making them attractive for cost. Voyage AI is particularly strong for technical/code content. Either could improve retrieval quality without changing the overall architecture.
+
 ## Testing
 
 The backend has unit tests; the frontend does not. In a real project, I'd have tests on both sides. This was kept lightweight given the prototype scope.

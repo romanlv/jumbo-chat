@@ -77,6 +77,21 @@
     "expectedSources": ["https://www.jumbo88.com/faqs"]
   },
   {
+    "name": "troubleshoot-geolocation",
+    "input": "It says Jumbo88 is not available in my area but I live in Texas",
+    "expectedOutcome": ["answer", "clarify"]
+  },
+  {
+    "name": "troubleshoot-vpn",
+    "input": "I'm using a VPN and the site won't let me play",
+    "expectedOutcome": ["answer", "clarify"]
+  },
+  {
+    "name": "troubleshoot-login-loading",
+    "input": "I can't log in, the page just keeps loading forever",
+    "expectedOutcome": "answer"
+  },
+  {
     "name": "account-specific-balance",
     "input": "Can you check my account balance?",
     "expectedOutcome": "clarify"

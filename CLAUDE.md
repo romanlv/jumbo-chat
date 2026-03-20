@@ -46,6 +46,18 @@ Shared UI primitives live in `src/components/ui/` (shadcn). Shared utilities liv
 - TypeBox (`@sinclair/typebox`) for backend request/response schemas.
 - shadcn/ui + Tailwind CSS for frontend components.
 
+## Testing Chat
+
+Use the CLI to test chat responses without a browser (from `backend/`):
+
+```bash
+bun run cli "What is Jumbo88?"            # single question
+bun run cli -s <session-id> "follow up"   # continue a conversation
+bun run cli -i                            # interactive REPL
+bun run cli -v "..."                      # show tool call summaries
+bun run cli -vv "..."                     # show full tool call details
+```
+
 ## Deployment & Debugging
 
 - Hosted on **Railway**. Deploy via GitHub Actions (`workflow_dispatch`).

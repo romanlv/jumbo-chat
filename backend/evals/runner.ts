@@ -38,6 +38,15 @@ const FOLLOWUP_PLEASANTRIES = [
   "resolve it",
   "did that help",
   "does that help",
+  "of those help",
+  "still not working",
+  "want to know",
+  "anything more specific",
+  "give those a shot",
+  "get you past",
+  "try those",
+  "give that a try",
+  "try that",
 ];
 
 function endsWithClarifyingQuestion(text: string): boolean {
@@ -103,7 +112,9 @@ function determineOutcome(events: SSEEvent[]): {
       lower.includes("can't share") ||
       lower.includes("can't ignore") ||
       lower.includes("politely decline") ||
-      lower.includes("i'm unable to")
+      lower.includes("i'm unable to") ||
+      lower.includes("instructions private") ||
+      lower.includes("system prompt private")
     ) {
       outcome = "decline";
     } else {

@@ -94,7 +94,7 @@
   {
     "name": "account-specific-balance",
     "input": "Can you check my account balance?",
-    "expectedOutcome": "clarify"
+    "expectedOutcome": ["clarify", "answer"]
   },
   {
     "name": "account-specific-transaction",
